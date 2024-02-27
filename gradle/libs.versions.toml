@@ -1,0 +1,72 @@
+[versions]
+androidx-activityCompose = "1.8.2"
+androidx-appcompat = "1.6.1"
+androidx-constraintlayout = "2.1.4"
+androidx-core-ktx = "1.12.0"
+androidx-espresso-core = "3.5.1"
+androidx-material = "1.11.0"
+androidx-test-junit = "1.1.5"
+compose = "1.6.2"
+compose-plugin = "1.6.0"
+compose-compiler = "1.5.9"
+coroutines = "1.8.0"
+junit = "4.13.2"
+kotlin = "1.9.22"
+kotlinx-serialization = "1.6.2"
+ktor = "3.0.0-beta-1"
+logback = "1.5.0"
+kermit = "2.0.3"
+#Gradle
+gradlePlugins-agp = "8.2.2"
+#build
+app-build-compileSDKVersion = "34"
+app-build-targetSDK = "34"
+app-build-minimumSDK = "24"
+app-build-javaVersion = "VERSION_17"
+app-build-testRunner = "androidx.test.runner.AndroidJUnitRunner"
+app-build-kotlinJVMTarget = "17"
+#versioning
+app-version-appId = "mk.inkotlin.kmp.intro"
+app-version-versionCode = "1"
+app-version-versionName = "1.0.0"
+[libraries]
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+#Compose
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+#ktor client
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-content-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+#ktor server
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
+#kermit
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+#Coroutines
+kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+#kotlinx
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+android-application = { id = "com.android.application", version.ref = "gradlePlugins-agp" }
+android-library = { id = "com.android.library", version.ref = "gradlePlugins-agp" }
