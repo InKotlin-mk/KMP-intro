@@ -31,12 +31,12 @@ kotlin {
     iosSimulatorArm64()
 
     jvm()
+    val wasmVersion = "wasm2"
 
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kermit)
             implementation(libs.kotlin.coroutines.core)
-            val wasmVersion = "wasm2"
             implementation("io.ktor:ktor-client-core:3.0.0-$wasmVersion")
             implementation("io.ktor:ktor-client-logging:3.0.0-$wasmVersion")
             implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.0-$wasmVersion")
@@ -49,8 +49,8 @@ kotlin {
 
         iosMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:atomicfu:0.23.2")
-                implementation(libs.ktor.client.darwin)
+                implementation("io.ktor:ktor-client-darwin:3.0.0-$wasmVersion")
+                //implementation(libs.ktor.client.darwin)
             }
         }
         jvmMain {
@@ -77,7 +77,7 @@ kotlin {
 }
 
 android {
-    namespace = "mk.inkotlin.kmp.intro.shared"
+    namespace = "${libs.versions.app.version.appId.get()}.shared"
     compileSdk = libs.versions.app.build.compileSDKVersion.get().toInt()
     defaultConfig {
         minSdk = libs.versions.app.build.minimumSDK.get().toInt()
