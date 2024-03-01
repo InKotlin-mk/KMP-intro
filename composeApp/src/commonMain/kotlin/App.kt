@@ -13,9 +13,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import api.PlaceholderApi
 import org.jetbrains.compose.resources.DrawableResource
@@ -43,88 +46,108 @@ fun App() {
         LaunchedEffect(Unit) {
             placeholders = PlaceholderApi.getPlaceholderModels()
         }
-        LaunchedEffect(refresh){
-            if (refresh){
+        LaunchedEffect(refresh) {
+            if (refresh) {
                 placeholders = PlaceholderApi.getPlaceholderModels()
             }
         }
-        val readOnlyPlaceholders = placeholders
-        when {
-            readOnlyPlaceholders == null -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+        PlaceHoldersScreen(
+            readOnlyPlaceholders = placeholders,
+            refreshData = {
+                //simulating refresh
+                refresh = true
+                placeholders = null
+                refresh = false
+            })
+    }
+}
 
-            readOnlyPlaceholders.isEmpty() -> Box(
-                Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+@Composable
+fun PlaceHoldersScreen(
+    readOnlyPlaceholders: List<PlaceholderModel>?,
+    refreshData: () -> Unit
+) {
+    when {
+        readOnlyPlaceholders == null -> LoadingComponent()
+        readOnlyPlaceholders.isEmpty() -> EmptyDataWithRetryComponent(refreshData)
+        else -> {
+            val horizontalItems by remember { derivedStateOf { readOnlyPlaceholders.take(5) } }
+            SimulatedSuccessComponent(
+                horizontalItems = horizontalItems,
+                verticalItems = readOnlyPlaceholders
+            )
+        }
+    }
+}
 
-                Column {
-                    Text(
-                        "Empty data"
-                    )
-                    Button(onClick = {
-                        placeholders = null
-                        refresh = false
-                        refresh = true
-                    }){
-                        Text("Refresh")
-                    }
-                }
-
-            }
-
-            else -> {
-                val middleIndex = (readOnlyPlaceholders.size / 2) + (readOnlyPlaceholders.size % 2)
-                val horizontalItems by remember {
-                    derivedStateOf { readOnlyPlaceholders.subList(0, middleIndex) }
-                }
-                val verticalItems by remember {
-                    derivedStateOf {
-                        readOnlyPlaceholders.subList(
-                            middleIndex + 1,
-                            readOnlyPlaceholders.lastIndex
+@Composable
+private fun SimulatedSuccessComponent(
+    horizontalItems: List<PlaceholderModel>,
+    verticalItems: List<PlaceholderModel>
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(24.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                LazyRow(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(horizontalItems, key = { it.id }) { item ->
+                        PlaceholderItem(
+                            modifier = Modifier
+                                .height(82.dp),
+                            text = item.title,
+                            isCompleted = item.completed
                         )
                     }
                 }
-
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                ) {
-                    LazyColumn(
-                        contentPadding = PaddingValues(24.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        item {
-                            LazyRow(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                items(horizontalItems, key = { it.id }) { item ->
-                                    PlaceholderItem(
-                                        modifier = Modifier
-                                            .height(82.dp),
-                                        text = item.title,
-                                        isCompleted = item.completed
-                                    )
-                                }
-                            }
-                        }
-                        items(verticalItems, key = { it.id }) { item ->
-                            PlaceholderItem(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = item.title,
-                                isCompleted = item.completed
-                            )
-                        }
-                    }
-                }
+            }
+            items(verticalItems, key = { it.id }) { item ->
+                PlaceholderItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item.title,
+                    isCompleted = item.completed
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun EmptyDataWithRetryComponent(
+    refreshData: () -> Unit
+) {
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column {
+            Text(
+                "Empty data"
+            )
+            Button(onClick = refreshData) {
+                Text("Refresh")
+            }
+        }
+
+    }
+}
+
+
+@Composable
+private fun LoadingComponent() {
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 
@@ -135,6 +158,7 @@ fun PlaceholderItem(
     text: String,
     isCompleted: Boolean,
 ) {
+    val isInInspectionMode = LocalInspectionMode.current
     Row(
         modifier
             .background(
@@ -149,11 +173,27 @@ fun PlaceholderItem(
             modifier = Modifier.padding(8.dp),
             color = if (isCompleted) Color.White else Color.Black
         )
-        Image(
-            painter = painterResource(DrawableResource(if (isCompleted) "ic_checked.xml" else "ic_unchecked.xml")),
-            contentDescription = null,
-            modifier = Modifier.padding(horizontal = 4.dp),
-            colorFilter = ColorFilter.tint(if (isCompleted) Color.White else Color.Black)
-        )
+        val imageModifier = remember {
+            Modifier.padding(horizontal = 4.dp)
+        }
+        val imageColorFilter = remember {
+            ColorFilter.tint(if (isCompleted) Color.White else Color.Black)
+        }
+        if (isInInspectionMode) {
+            Image(
+                if (isCompleted) Icons.Default.Check else Icons.Default.CheckBoxOutlineBlank,
+                contentDescription = null,
+                modifier = imageModifier,
+                colorFilter = imageColorFilter
+            )
+        } else {
+            Image(
+                painter = painterResource(DrawableResource(if (isCompleted) "ic_checked.xml" else "ic_unchecked.xml")),
+                contentDescription = null,
+                modifier = imageModifier,
+                colorFilter = imageColorFilter
+            )
+        }
+
     }
 }

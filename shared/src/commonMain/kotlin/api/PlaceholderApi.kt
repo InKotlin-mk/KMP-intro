@@ -24,21 +24,16 @@ object PlaceholderApi {
         url("http://192.168.31.65:8080/models")
     }.orEmpty()
 
-
     private suspend inline fun <reified T> HttpClient.safeRequest(
         block: HttpRequestBuilder.() -> Unit,
-    ): T? =
-        try {
-            val response = request { block() }
-            if (response.status == HttpStatusCode.OK) {
-                response.body<T>()
-            } else {
-                null
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
+    ): T? = runCatching {
+        val response = request { block() }
+        if (response.status == HttpStatusCode.OK) {
+            response.body<T>()
+        } else {
             null
         }
+    }.getOrNull()
 
 
 }
