@@ -21,7 +21,7 @@ object PlaceholderApi {
 
     suspend fun getPlaceholderModels() = httpClient.safeRequest<List<PlaceholderModel>> {
         accept(ContentType.Application.Json)
-        url("http://192.168.31.65:8080/models")
+        url("http://0.0.0.0:8080/models")
     }.orEmpty()
 
     private suspend inline fun <reified T> HttpClient.safeRequest(
