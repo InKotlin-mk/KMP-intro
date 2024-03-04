@@ -32,17 +32,18 @@ fun Application.module() {
     }
 }
 
-
 fun jsonResource(): List<PlaceholderModel> =
     Application::class.java.classLoader.getResource("internal/placeholder.json")
         ?.readText()?.convertToDataClass<List<PlaceholderModel>>().orEmpty()
 
-internal inline fun <reified R : Any> String.convertToDataClass() =
-    Json {
-        ignoreUnknownKeys = true
-    }.decodeFromString<R>(this)
+private val json = Json {
+    ignoreUnknownKeys = true
+}
 
-fun Application.contentNegotiation() {
+internal inline fun <reified R : Any> String.convertToDataClass() =
+    json.decodeFromString<R>(this)
+
+private fun Application.contentNegotiation() {
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -51,10 +52,7 @@ fun Application.contentNegotiation() {
             encodeDefaults = true
         })
     }
-
-    install(DefaultHeaders){
-
-    }
+    install(DefaultHeaders){}
     install(CORS) {
         anyHost()
         allowMethod(HttpMethod.Get)
